@@ -22,6 +22,7 @@
             max-width: 1800px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
         }
         
         header {
@@ -246,18 +247,67 @@
         /* 可能正常数据 - 显示为红色 */
         .normal-data {
             color: #f72585;
+            background-color: rgba(247, 37, 133, 0.25);
         }
         
-        /* 关于部分样式 */
-        .about-section {
+        /* 关于按钮样式 */
+        .about-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #4cc9f0;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(76, 201, 240, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .about-btn:hover {
+            background-color: #72efdd;
+            transform: scale(1.1);
+        }
+        
+        /* 关于弹窗样式 */
+        .about-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .about-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .about-modal-content {
             background-color: #16213e;
-            padding: 25px;
+            padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
         }
         
-        .about-section h2 {
+        .about-modal-content h2 {
             color: #4cc9f0;
             margin-top: 0;
             margin-bottom: 20px;
@@ -265,21 +315,34 @@
             border-bottom: 1px solid #2d4059;
         }
         
-        .about-content {
+        .about-modal-content .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #b0b0b0;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .about-modal-content .close-btn:hover {
+            color: #4cc9f0;
+        }
+        
+        .about-modal-content p {
+            margin-bottom: 15px;
             line-height: 1.8;
         }
         
-        .about-content p {
-            margin-bottom: 15px;
-        }
-        
-        .about-content a {
+        .about-modal-content a {
             color: #4cc9f0;
             text-decoration: none;
             transition: color 0.3s ease;
         }
         
-        .about-content a:hover {
+        .about-modal-content a:hover {
             color: #72efdd;
             text-decoration: underline;
         }
@@ -547,6 +610,21 @@
 </head>
 <body>
     <div class="container">
+        <!-- 关于按钮 -->
+        <button class="about-btn" id="aboutBtn">关于</button>
+        
+        <!-- 关于弹窗 -->
+        <div class="about-modal" id="aboutModal">
+            <div class="about-modal-content">
+                <button class="close-btn" id="closeAboutBtn">&times;</button>
+                <h2>关于</h2>
+                <p><strong>项目简介：</strong>这是一个功能强大的二进制转换器，支持在二进制、ASCII和Unicode之间进行相互转换。用户可以自定义字节长度（1-20位），实时查看转换结果，包括正常数据和0/1互换结果。</p>
+                <p><strong>作者：</strong>EchoOfCloud</p>
+                <p><strong>GitHub地址：</strong><a href="https://github.com/EchoOfCloud/Bitwise-Converter" target="_blank">https://github.com/EchoOfCloud/Bitwise-Converter</a></p>
+                <p><strong>在线访问网址：</strong><a href="https://echoofcloud.github.io/Bitwise-Converter/" target="_blank">https://echoofcloud.github.io/Bitwise-Converter/</a></p>
+                <p><strong>备用网址：</strong><a href="https://lighthearted-brioche-faf326.netlify.app/" target="_blank">https://lighthearted-brioche-faf326.netlify.app/</a></p>
+            </div>
+        </div>
         <header>
             <h1>二进制转ASCII/Unicode转换器</h1>
             <p class="description">
@@ -564,16 +642,7 @@
             </div>
         </header>
         
-        <div class="about-section">
-            <h2>关于</h2>
-            <div class="about-content">
-                <p><strong>项目简介：</strong>这是一个功能强大的二进制转换器，支持在二进制、ASCII和Unicode之间进行相互转换。用户可以自定义字节长度（1-20位），实时查看转换结果，包括正常数据和0/1互换结果。</p>
-                <p><strong>作者：</strong>EchoOfCloud</p>
-                <p><strong>GitHub地址：</strong><a href="https://github.com/EchoOfCloud/Bitwise-Converter" target="_blank">https://github.com/EchoOfCloud/Bitwise-Converter</a></p>
-                <p><strong>在线访问网址：</strong><a href="https://echoofcloud.github.io/Bitwise-Converter/" target="_blank">https://echoofcloud.github.io/Bitwise-Converter/</a></p>
-                <p><strong>备用网址：</strong><a href="https://lighthearted-brioche-faf326.netlify.app/" target="_blank">https://lighthearted-brioche-faf326.netlify.app/</a></p>
-            </div>
-        </div>
+
         
         <div class="main-content">
             <section class="input-section">
@@ -668,6 +737,28 @@
         const MAX_BYTE_LENGTH = 20;
         const DEFAULT_BYTE_LENGTHS = [5, 6, 7, 8, 9, 10];
         
+        // 关于弹窗功能
+        const aboutBtn = document.getElementById('aboutBtn');
+        const aboutModal = document.getElementById('aboutModal');
+        const closeAboutBtn = document.getElementById('closeAboutBtn');
+        
+        // 打开关于弹窗
+        aboutBtn.addEventListener('click', function() {
+            aboutModal.classList.add('active');
+        });
+        
+        // 关闭关于弹窗
+        closeAboutBtn.addEventListener('click', function() {
+            aboutModal.classList.remove('active');
+        });
+        
+        // 点击弹窗外部关闭
+        aboutModal.addEventListener('click', function(e) {
+            if (e.target === aboutModal) {
+                aboutModal.classList.remove('active');
+            }
+        });
+        
         // DOM元素
         const conversionResults = document.getElementById('conversionResults');
         const binaryInput = document.getElementById('binaryInput');
@@ -735,7 +826,6 @@
                     <div class="converter-header">
                         <div class="converter-title">
                             <span>${length}位字节转换</span>
-                            <span class="byte-length">${length}位</span>
                         </div>
                     </div>
                     <div class="result-grid">
