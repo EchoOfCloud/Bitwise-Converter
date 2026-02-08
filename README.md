@@ -2,6 +2,12 @@
 
 一个功能强大的二进制转换器，支持在二进制、ASCII和Unicode之间进行相互转换。
 
+
+## 在线访问
+
+- 在线访问网址：[https://echoofcloud.github.io/Bitwise-Converter/](https://echoofcloud.github.io/Bitwise-Converter/)
+- 备用网址：[https://lighthearted-brioche-faf326.netlify.app/](https://lighthearted-brioche-faf326.netlify.app/)
+
 ## 功能特点
 
 - 支持二进制与ASCII互转
