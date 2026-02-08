@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二进制转ASCII/Unicode转换器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #1a1a2e;
+            color: #e6e6e6;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #4cc9f0;
+        }
+        
+        h1 {
+            color: #4cc9f0;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .description {
+            color: #b0b0b0;
+            max-width: 800px;
+            margin: 0 auto 20px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 1400px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-section {
+            background-color: #16213e;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .output-section {
+            background-color: #16213e;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            max-height: 1200px;
+            overflow-y: auto;
+        }
+        
+        .section-title {
+            color: #4cc9f0;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2d4059;
+        }
+        
+        .input-container {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            background-color: #0f3460;
+            color: #e6e6e6;
+            border: 1px solid #2d4059;
+            border-radius: 5px;
+            font-size: 16px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            line-height: 1.5;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #4cc9f0;
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.3);
+        }
+        
+        .byte-length-note {
+            font-size: 14px;
+            color: #f72585;
+            margin-top: 5px;
+        }
+        
+        .conversion-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .conversion-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .converter-box {
+            background-color: #0f3460;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #4cc9f0;
+            display: flex;
+            flex-direction: column;
+            min-height: 180px;
+        }
+        
+        .converter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #4cc9f0;
+        }
+        
+        .converter-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .byte-length {
+            background-color: #f72585;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        @media (max-width: 550px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .result-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .result-type-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #b0b0b0;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+        
+        .result-type {
+            background-color: #1a1a2e;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .ascii-type {
+            color: #4cc9f0;
+        }
+        
+        .unicode-type {
+            color: #9d4edd;
+        }
+        
+        .copy-btn {
+            background-color: #4cc9f0;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 6px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            min-width: 24px;
+            justify-content: center;
+        }
+        
+        .copy-btn:hover {
+            background-color: #72efdd;
+        }
+        
+        .copy-btn.copied {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .conversion-result {
+            font-family: 'Courier New', monospace;
+            background-color: #1a1a2e;
+            padding: 8px;
+            border-radius: 5px;
+            word-break: break-all;
+            font-size: 14px;
+            font-weight: bold;
+            min-height: 40px;
+            max-height: 60px;
+            overflow-y: auto;
+        }
+        
+        /* 可能正常数据 - 显示为红色 */
+        .normal-data {
+            color: #f72585;
+        }
+        
+        /* 关于部分样式 */
+        .about-section {
+            background-color: #16213e;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+        
+        .about-section h2 {
+            color: #4cc9f0;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2d4059;
+        }
+        
+        .about-content {
+            line-height: 1.8;
+        }
+        
+        .about-content p {
+            margin-bottom: 15px;
+        }
+        
+        .about-content a {
+            color: #4cc9f0;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .about-content a:hover {
+            color: #72efdd;
+            text-decoration: underline;
+        }
+        
+        /* 异常数据 - 显示为绿色 */
+        .abnormal-data {
+            color: #4CAF50;
+        }
+        
+        .inverted-result {
+            margin-top: 5px;
+            border-top: 1px dashed #2d4059;
+            padding-top: 5px;
+        }
+        
+        .inverted-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3px;
+        }
+        
+        .inverted-label {
+            color: #f72585;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .instructions {
+            background-color: #0f3460;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        
+        .instructions h3 {
+            color: #4cc9f0;
+            margin-top: 0;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        
+        .instructions code {
+            background-color: #1a1a2e;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #2d4059;
+            color: #b0b0b0;
+            font-size: 14px;
+        }
+        
+        .examples {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .examples span {
+            color: #4cc9f0;
+            cursor: pointer;
+            text-decoration: underline;
+            margin: 0 10px;
+        }
+        
+        .examples span:hover {
+            color: #72efdd;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #b0b0b0;
+        }
+        
+        .char-count {
+            display: flex;
+            align-items: center;
+        }
+        
+        .char-count span {
+            margin-left: 5px;
+            font-weight: bold;
+            color: #4cc9f0;
+        }
+        
+        .clear-btn {
+            background-color: transparent;
+            color: #f72585;
+            border: 1px solid #f72585;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .clear-btn:hover {
+            background-color: rgba(247, 37, 133, 0.1);
+        }
+        
+        .copy-icon {
+            font-size: 12px;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-weight: bold;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .byte-selection {
+            background-color: #0f3460;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .byte-selection-title {
+            color: #4cc9f0;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .byte-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .byte-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .byte-option input {
+            margin: 0;
+        }
+        
+        .byte-option label {
+            margin: 0;
+            color: #b0b0b0;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .selection-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .selection-btn {
+            background-color: transparent;
+            color: #4cc9f0;
+            border: 1px solid #4cc9f0;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .selection-btn:hover {
+            background-color: rgba(76, 201, 240, 0.1);
+        }
+        
+        .result-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .result-count {
+            color: #b0b0b0;
+            font-size: 14px;
+        }
+        
+        .result-count span {
+            color: #4cc9f0;
+            font-weight: bold;
+        }
+        
+        .output-section::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .output-section::-webkit-scrollbar-track {
+            background: #1a1a2e;
+            border-radius: 4px;
+        }
+        
+        .output-section::-webkit-scrollbar-thumb {
+            background: #4cc9f0;
+            border-radius: 4px;
+        }
+        
+        .empty-result {
+            text-align: center;
+            padding: 40px;
+            color: #b0b0b0;
+            font-size: 16px;
+        }
+        
+        .color-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        
+        .legend-normal {
+            background-color: #f72585;
+        }
+        
+        .legend-abnormal {
+            background-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>二进制转ASCII/Unicode转换器</h1>
+            <p class="description">
+                输入二进制数据，实时按不同字节长度(1-20位)转换为ASCII和Unicode字符。每个转换器将二进制数据分割为指定长度的段，然后将每个段转换为对应的字符。
+            </p>
+            <div class="color-legend">
+                <div class="legend-item">
+                    <div class="legend-color legend-normal"></div>
+                    <span>正常数据（红色）：英文字母、汉字、常见符号</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color legend-abnormal"></div>
+                    <span>异常数据（绿色）：乱码、控制字符、错误</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="about-section">
+            <h2>关于</h2>
+            <div class="about-content">
+                <p><strong>项目简介：</strong>这是一个功能强大的二进制转换器，支持在二进制、ASCII和Unicode之间进行相互转换。用户可以自定义字节长度（1-20位），实时查看转换结果，包括正常数据和0/1互换结果。</p>
+                <p><strong>作者：</strong>EchoOfCloud</p>
+                <p><strong>GitHub地址：</strong><a href="https://github.com/EchoOfCloud/Bitwise-Converter" target="_blank">https://github.com/EchoOfCloud/Bitwise-Converter</a></p>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <section class="input-section">
+                <h2 class="section-title">二进制输入</h2>
+                <div class="input-container">
+                    <label for="binaryInput">请输入二进制数据（仅0和1）：</label>
+                    <textarea id="binaryInput" placeholder="例如：0100100001100101011011000110110001101111...">0100100001100101011011000110110001101111</textarea>
+                    <div class="stats">
+                        <div class="char-count">
+                            有效字符数: <span id="charCount">0</span>
+                        </div>
+                        <button class="clear-btn" id="clearBtn">清空输入</button>
+                    </div>
+                    <div class="byte-length-note">
+                        注意：输入将被按不同字节长度分割，长度不足的部分将被忽略
+                    </div>
+                </div>
+                
+                <div class="byte-selection">
+                    <h3 class="byte-selection-title">选择字节长度 (1-20)</h3>
+                    <div class="byte-options" id="byteOptions">
+                        <!-- 字节选项将在这里动态生成 -->
+                    </div>
+                    <div class="selection-actions">
+                        <button class="selection-btn" id="selectAllBtn">全选</button>
+                        <button class="selection-btn" id="selectNoneBtn">全不选</button>
+                        <button class="selection-btn" id="selectDefaultBtn">选择默认(5-10)</button>
+                    </div>
+                </div>
+                
+                <div class="examples">
+                    示例:
+                    <span onclick="loadExample(1)">Hello (8位)</span>
+                    <span onclick="loadExample(2)">Test (7位)</span>
+                    <span onclick="loadExample(3)">ABC (5位)</span>
+                    <span onclick="loadExample(4)">混合长度</span>
+                </div>
+            </section>
+            
+            <section class="output-section">
+                <div class="result-actions">
+                    <div class="result-count">
+                        显示结果: <span id="resultCount">0</span> 个转换器
+                    </div>
+                </div>
+                
+                <div class="conversion-grid" id="conversionResults">
+                    <!-- 转换结果将在这里动态生成 -->
+                </div>
+                
+                <div class="empty-result" id="emptyResult" style="display: none;">
+                    请选择至少一个字节长度以显示转换结果
+                </div>
+            </section>
+        </div>
+        
+        <div class="instructions">
+            <h3>使用说明</h3>
+            <ul>
+                <li>在左侧文本框中输入二进制字符串（仅包含0和1）</li>
+                <li>转换将实时进行，结果将显示在右侧的各个转换器中</li>
+                <li>在字节选择区域选择要转换的字节长度（1-20位）</li>
+                <li>每个转换器同时显示两种转换结果：
+                    <ul>
+                        <li><strong>ASCII</strong>：转换为ASCII字符（32-126）</li>
+                        <li><strong>Unicode</strong>：转换为Unicode字符（0-0x10FFFF）</li>
+                    </ul>
+                </li>
+                <li>每种转换结果下面直接显示0/1互换转换结果（红色标签）</li>
+                <li><strong>颜色说明：</strong>
+                    <ul>
+                        <li><span style="color: #f72585;">红色</span>：正常数据（英文字母、汉字、常见符号）</li>
+                        <li><span style="color: #4CAF50;">绿色</span>：异常数据（乱码、控制字符、错误）</li>
+                    </ul>
+                </li>
+                <li>点击右上角的复制按钮可以复制对应的转换结果（正常结果在顶部右侧，0/1互换结果在"0/1互换"标签右侧）</li>
+                <li>点击上方示例可以快速加载测试数据</li>
+                <li>点击"清空输入"按钮可以清空输入框</li>
+            </ul>
+        </div>
+        
+        <footer>
+            <p>二进制转ASCII/Unicode转换器 &copy; EchoOfCloud 2026 | 支持字节长度: 1-20位 | 支持编码: ASCII, Unicode</p>
+        </footer>
+        
+        <!-- 复制成功提示 -->
+        <div class="toast" id="copyToast">已复制到剪贴板！</div>
+    </div>
+
+    <script>
+        // 配置
+        const MAX_BYTE_LENGTH = 20;
+        const DEFAULT_BYTE_LENGTHS = [5, 6, 7, 8, 9, 10];
+        
+        // DOM元素
+        const conversionResults = document.getElementById('conversionResults');
+        const binaryInput = document.getElementById('binaryInput');
+        const charCount = document.getElementById('charCount');
+        const clearBtn = document.getElementById('clearBtn');
+        const copyToast = document.getElementById('copyToast');
+        const byteOptions = document.getElementById('byteOptions');
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const selectNoneBtn = document.getElementById('selectNoneBtn');
+        const selectDefaultBtn = document.getElementById('selectDefaultBtn');
+        const resultCount = document.getElementById('resultCount');
+        const emptyResult = document.getElementById('emptyResult');
+        
+        // 状态
+        let selectedByteLengths = [...DEFAULT_BYTE_LENGTHS];
+        
+        // 初始化字节选择选项
+        function initByteOptions() {
+            for (let i = 1; i <= MAX_BYTE_LENGTH; i++) {
+                const option = document.createElement('div');
+                option.className = 'byte-option';
+                option.innerHTML = `
+                    <input type="checkbox" id="byte-${i}" value="${i}" ${DEFAULT_BYTE_LENGTHS.includes(i) ? 'checked' : ''}>
+                    <label for="byte-${i}">${i}位</label>
+                `;
+                byteOptions.appendChild(option);
+            }
+        }
+        
+        // 更新选中的字节长度
+        function updateSelectedByteLengths() {
+            selectedByteLengths = [];
+            const checkboxes = document.querySelectorAll('.byte-option input:checked');
+            checkboxes.forEach(checkbox => {
+                selectedByteLengths.push(parseInt(checkbox.value));
+            });
+            
+            // 排序
+            selectedByteLengths.sort((a, b) => a - b);
+            
+            // 更新显示
+            updateConverterDisplays();
+            updateResultCount();
+        }
+        
+        // 更新转换器显示
+        function updateConverterDisplays() {
+            // 清空现有转换器
+            conversionResults.innerHTML = '';
+            
+            if (selectedByteLengths.length === 0) {
+                emptyResult.style.display = 'block';
+                return;
+            }
+            
+            emptyResult.style.display = 'none';
+            
+            // 创建选中的转换器
+            selectedByteLengths.forEach(length => {
+                const converterBox = document.createElement('div');
+                converterBox.className = 'converter-box';
+                converterBox.id = `converter-${length}`;
+                
+                converterBox.innerHTML = `
+                    <div class="converter-header">
+                        <div class="converter-title">
+                            <span>${length}位字节转换</span>
+                            <span class="byte-length">${length}位</span>
+                        </div>
+                    </div>
+                    <div class="result-grid">
+                        <!-- ASCII转换 -->
+                        <div class="result-cell">
+                            <div class="result-type-header">
+                                <span>
+                                    ASCII
+                                    <span class="result-type ascii-type">A</span>
+                                </span>
+                                <button class="copy-btn" data-length="${length}" data-type="ascii" data-inverted="false" title="复制正常结果">
+                                    <span class="copy-icon">📋</span>
+                                </button>
+                            </div>
+                            <div class="conversion-result" id="ascii-normal-${length}">等待输入...</div>
+                            <div class="inverted-result">
+                                <div class="inverted-header">
+                                    <div class="inverted-label">0/1互换</div>
+                                    <button class="copy-btn" data-length="${length}" data-type="ascii" data-inverted="true" title="复制0/1互换结果">
+                                        <span class="copy-icon">📋</span>
+                                    </button>
+                                </div>
+                                <div class="conversion-result" id="ascii-inverted-${length}">等待输入...</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Unicode转换 -->
+                        <div class="result-cell">
+                            <div class="result-type-header">
+                                <span>
+                                    Unicode
+                                    <span class="result-type unicode-type">U</span>
+                                </span>
+                                <button class="copy-btn" data-length="${length}" data-type="unicode" data-inverted="false" title="复制正常结果">
+                                    <span class="copy-icon">📋</span>
+                                </button>
+                            </div>
+                            <div class="conversion-result" id="unicode-normal-${length}">等待输入...</div>
+                            <div class="inverted-result">
+                                <div class="inverted-header">
+                                    <div class="inverted-label">0/1互换</div>
+                                    <button class="copy-btn" data-length="${length}" data-type="unicode" data-inverted="true" title="复制0/1互换结果">
+                                        <span class="copy-icon">📋</span>
+                                    </button>
+                                </div>
+                                <div class="conversion-result" id="unicode-inverted-${length}">等待输入...</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                conversionResults.appendChild(converterBox);
+            });
+            
+            // 更新转换结果
+            updateConversionResults();
+        }
+        
+        // 更新结果计数
+        function updateResultCount() {
+            resultCount.textContent = selectedByteLengths.length;
+        }
+        
+        // 将二进制字符串按指定长度分割
+        function splitBinaryString(binaryStr, length) {
+            const segments = [];
+            for (let i = 0; i + length <= binaryStr.length; i += length) {
+                segments.push(binaryStr.substring(i, i + length));
+            }
+            return segments;
+        }
+        
+        // 将二进制字符串中的0和1互换
+        function invertBinaryString(binaryStr) {
+            return binaryStr.split('').map(bit => bit === '0' ? '1' : '0').join('');
+        }
+        
+        // 将二进制段转换为ASCII
+        function binarySegmentToAscii(segment) {
+            let decimalValue = 0;
+            for (let i = 0; i < segment.length; i++) {
+                decimalValue = decimalValue * 2 + parseInt(segment[i]);
+            }
+            
+            if (decimalValue >= 32 && decimalValue <= 126) {
+                return String.fromCharCode(decimalValue);
+            } else {
+                return '�';
+            }
+        }
+        
+        // 将二进制段转换为Unicode字符
+        function binarySegmentToUnicode(segment) {
+            let decimalValue = 0;
+            for (let i = 0; i < segment.length; i++) {
+                decimalValue = decimalValue * 2 + parseInt(segment[i]);
+            }
+            
+            if (decimalValue >= 0 && decimalValue <= 0x10FFFF && 
+                (decimalValue < 0xD800 || decimalValue > 0xDFFF)) {
+                try {
+                    return String.fromCodePoint(decimalValue);
+                } catch (e) {
+                    return '�';
+                }
+            } else {
+                return '�';
+            }
+        }
+        
+        // 检查字符是否为正常可读字符
+        function isReadableChar(char) {
+            if (char === '�') return false;
+            
+            // 检查ASCII可打印字符
+            const code = char.charCodeAt(0);
+            if (code >= 32 && code <= 126) return true;
+            
+            // 检查中文汉字（基本汉字和扩展汉字）
+            if (code >= 0x4E00 && code <= 0x9FFF) return true;
+            if (code >= 0x3400 && code <= 0x4DBF) return true; // 扩展A
+            if (code >= 0x20000 && code <= 0x2A6DF) return true; // 扩展B
+            
+            // 检查中文标点符号
+            if (code >= 0x3000 && code <= 0x303F) return true;
+            
+            // 检查日文假名
+            if (code >= 0x3040 && code <= 0x30FF) return true;
+            
+            // 检查韩文
+            if (code >= 0xAC00 && code <= 0xD7AF) return true;
+            
+            // 检查常见符号
+            if (code >= 0x2000 && code <= 0x206F) return true; // 常用标点
+            if (code >= 0x20A0 && code <= 0x20CF) return true; // 货币符号
+            
+            // 检查字母扩展（拉丁扩展、希腊字母等）
+            if (code >= 0x00C0 && code <= 0x00FF) return true; // 拉丁文补充
+            if (code >= 0x0100 && code <= 0x017F) return true; // 拉丁文扩展A
+            if (code >= 0x0180 && code <= 0x024F) return true; // 拉丁文扩展B
+            if (code >= 0x0370 && code <= 0x03FF) return true; // 希腊字母
+            
+            // 检查数字形式
+            if (code >= 0x2150 && code <= 0x218F) return true;
+            
+            // 检查表情符号（基础）
+            if (code >= 0x1F600 && code <= 0x1F64F) return true;
+            
+            return false;
+        }
+        
+        // 检查结果是否为可能正常数据
+        function isPossibleNormalData(result, type) {
+            // 如果结果是"等待输入..."、"不足X位"或"无结果"，则不是正常数据
+            if (result === '等待输入...' || result.startsWith('不足') || result === '无结果') {
+                return false;
+            }
+            
+            // 如果结果包含'�'，则不是正常数据
+            if (result.includes('�')) {
+                return false;
+            }
+            
+            // 对于ASCII和Unicode，检查是否包含可读字符
+            if (type === 'ascii' || type === 'unicode') {
+                // 检查每个字符是否可读
+                for (let i = 0; i < result.length; i++) {
+                    if (!isReadableChar(result[i])) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // 更新字符计数
+        function updateCharCount() {
+            const binaryStr = binaryInput.value.replace(/[^01]/g, '');
+            charCount.textContent = binaryStr.length;
+        }
+        
+        // 更新转换结果显示
+        function updateConversionResults() {
+            let binaryStr = binaryInput.value.trim();
+            
+            binaryStr = binaryStr.replace(/[^01]/g, '');
+            updateCharCount();
+            
+            if (binaryStr === '') {
+                selectedByteLengths.forEach(length => {
+                    document.getElementById(`ascii-normal-${length}`).textContent = '等待输入...';
+                    document.getElementById(`ascii-normal-${length}`).className = 'conversion-result abnormal-data';
+                    document.getElementById(`ascii-inverted-${length}`).textContent = '等待输入...';
+                    document.getElementById(`ascii-inverted-${length}`).className = 'conversion-result abnormal-data';
+                    
+                    document.getElementById(`unicode-normal-${length}`).textContent = '等待输入...';
+                    document.getElementById(`unicode-normal-${length}`).className = 'conversion-result abnormal-data';
+                    document.getElementById(`unicode-inverted-${length}`).textContent = '等待输入...';
+                    document.getElementById(`unicode-inverted-${length}`).className = 'conversion-result abnormal-data';
+                });
+                return;
+            }
+            
+            selectedByteLengths.forEach(length => {
+                const normalSegments = splitBinaryString(binaryStr, length);
+                const invertedBinaryStr = invertBinaryString(binaryStr);
+                const invertedSegments = splitBinaryString(invertedBinaryStr, length);
+                
+                updateConversionType('ascii', length, normalSegments, invertedSegments);
+                updateConversionType('unicode', length, normalSegments, invertedSegments);
+            });
+        }
+        
+        // 更新特定类型的转换结果
+        function updateConversionType(type, length, normalSegments, invertedSegments) {
+            const normalElement = document.getElementById(`${type}-normal-${length}`);
+            const invertedElement = document.getElementById(`${type}-inverted-${length}`);
+            
+            // 转换函数
+            const converterFunc = type === 'ascii' ? binarySegmentToAscii : binarySegmentToUnicode;
+            
+            // 正常转换
+            if (normalSegments.length === 0) {
+                normalElement.textContent = `不足${length}位`;
+                normalElement.className = 'conversion-result abnormal-data'; // 绿色
+            } else {
+                let result = '';
+                
+                for (let segment of normalSegments) {
+                    const char = converterFunc(segment);
+                    result += char;
+                }
+                
+                normalElement.textContent = result || '无结果';
+                
+                // 判断是否为可能正常数据
+                if (isPossibleNormalData(normalElement.textContent, type)) {
+                    normalElement.className = 'conversion-result normal-data'; // 红色
+                } else {
+                    normalElement.className = 'conversion-result abnormal-data'; // 绿色
+                }
+            }
+            
+            // 互换转换
+            if (invertedSegments.length === 0) {
+                invertedElement.textContent = `不足${length}位`;
+                invertedElement.className = 'conversion-result abnormal-data'; // 绿色
+            } else {
+                let result = '';
+                
+                for (let segment of invertedSegments) {
+                    const char = converterFunc(segment);
+                    result += char;
+                }
+                
+                invertedElement.textContent = result || '无结果';
+                
+                // 判断是否为可能正常数据
+                if (isPossibleNormalData(invertedElement.textContent, type)) {
+                    invertedElement.className = 'conversion-result normal-data'; // 红色
+                } else {
+                    invertedElement.className = 'conversion-result abnormal-data'; // 绿色
+                }
+            }
+        }
+        
+        // 复制文本到剪贴板
+        function copyToClipboard(text, button) {
+            if (!text || text === '等待输入...' || text === '无结果' || text.startsWith('不足')) {
+                return;
+            }
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showCopyToast();
+                
+                button.classList.add('copied');
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<span class="copy-icon">✓</span>';
+                
+                setTimeout(() => {
+                    button.classList.remove('copied');
+                    button.innerHTML = originalHTML;
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败: ', err);
+                alert('复制失败，请手动复制文本');
+            });
+        }
+        
+        // 显示复制成功提示
+        function showCopyToast() {
+            copyToast.classList.add('show');
+            setTimeout(() => {
+                copyToast.classList.remove('show');
+            }, 2000);
+        }
+        
+        // 示例数据
+        function loadExample(exampleNum) {
+            const examples = {
+                1: "0100100001100101011011000110110001101111", // Hello (8位)
+                2: "1010100110010111100111110100", // Test (7位)
+                3: "00001000110001010011", // ABC (5位)
+                4: "0100100001100101011011000110110001101111010011100101011101001111010100100100110001000100" // 混合长度
+            };
+            
+            binaryInput.value = examples[exampleNum];
+            updateConversionResults();
+        }
+        
+        // 清空输入框
+        function clearInput() {
+            binaryInput.value = '';
+            binaryInput.focus();
+            updateConversionResults();
+        }
+        
+        // 全选字节长度
+        function selectAllByteLengths() {
+            const checkboxes = document.querySelectorAll('.byte-option input');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+            updateSelectedByteLengths();
+        }
+        
+        // 全不选字节长度
+        function selectNoneByteLengths() {
+            const checkboxes = document.querySelectorAll('.byte-option input');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateSelectedByteLengths();
+        }
+        
+        // 选择默认字节长度
+        function selectDefaultByteLengths() {
+            const checkboxes = document.querySelectorAll('.byte-option input');
+            checkboxes.forEach(checkbox => {
+                const value = parseInt(checkbox.value);
+                checkbox.checked = DEFAULT_BYTE_LENGTHS.includes(value);
+            });
+            updateSelectedByteLengths();
+        }
+        
+        // 初始化复制按钮事件
+        function initCopyButtons() {
+            document.addEventListener('click', function(e) {
+                // 处理所有复制按钮（包括正常结果和0/1互换结果）
+                if (e.target.classList.contains('copy-btn') || e.target.closest('.copy-btn')) {
+                    const button = e.target.classList.contains('copy-btn') ? e.target : e.target.closest('.copy-btn');
+                    const length = button.getAttribute('data-length');
+                    const type = button.getAttribute('data-type');
+                    const inverted = button.getAttribute('data-inverted') === 'true';
+                    
+                    const elementId = inverted ? `${type}-inverted-${length}` : `${type}-normal-${length}`;
+                    const element = document.getElementById(elementId);
+                    const text = element.textContent;
+                    
+                    copyToClipboard(text, button);
+                }
+            });
+        }
+        
+        // 初始化字节选择事件
+        function initByteSelectionEvents() {
+            const checkboxes = document.querySelectorAll('.byte-option input');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateSelectedByteLengths);
+            });
+            
+            selectAllBtn.addEventListener('click', selectAllByteLengths);
+            selectNoneBtn.addEventListener('click', selectNoneByteLengths);
+            selectDefaultBtn.addEventListener('click', selectDefaultByteLengths);
+        }
+        
+        // 初始化
+        function init() {
+            initByteOptions();
+            updateConverterDisplays();
+            initCopyButtons();
+            initByteSelectionEvents();
+            
+            binaryInput.addEventListener('input', updateConversionResults);
+            clearBtn.addEventListener('click', clearInput);
+            
+            updateConversionResults();
+            updateResultCount();
+            
+            document.querySelectorAll('.examples span').forEach(span => {
+                span.addEventListener('click', function() {
+                    const exampleNum = parseInt(this.getAttribute('onclick').match(/\d+/)[0]);
+                    loadExample(exampleNum);
+                });
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
