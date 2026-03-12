@@ -711,7 +711,8 @@
                         <li><strong>Unicode</strong>：转换为Unicode字符（0-0x10FFFF）</li>
                     </ul>
                 </li>
-                <li>每种转换结果下面直接显示0/1互换转换结果（红色标签）</li>
+                <li>每种转换结果下面直接显示0/1互换转换结果和翻转转换结果（红色标签）</li>
+                <li><strong>翻转功能</strong>：将二进制字符串的顺序完全反转，例如：100010 反转为 010001</li>
                 <li><strong>颜色说明：</strong>
                     <ul>
                         <li><span style="color: #f72585;">红色</span>：正常数据（英文字母、汉字、常见符号）</li>
@@ -836,7 +837,7 @@
                                     ASCII
                                     <span class="result-type ascii-type">A</span>
                                 </span>
-                                <button class="copy-btn" data-length="${length}" data-type="ascii" data-inverted="false" title="复制正常结果">
+                                <button class="copy-btn" data-length="${length}" data-type="ascii" data-inverted="false" data-reversed="false" title="复制正常结果">
                                     <span class="copy-icon">📋</span>
                                 </button>
                             </div>
@@ -844,11 +845,20 @@
                             <div class="inverted-result">
                                 <div class="inverted-header">
                                     <div class="inverted-label">0/1互换</div>
-                                    <button class="copy-btn" data-length="${length}" data-type="ascii" data-inverted="true" title="复制0/1互换结果">
+                                    <button class="copy-btn" data-length="${length}" data-type="ascii" data-inverted="true" data-reversed="false" title="复制0/1互换结果">
                                         <span class="copy-icon">📋</span>
                                     </button>
                                 </div>
                                 <div class="conversion-result" id="ascii-inverted-${length}">等待输入...</div>
+                            </div>
+                            <div class="inverted-result">
+                                <div class="inverted-header">
+                                    <div class="inverted-label">翻转</div>
+                                    <button class="copy-btn" data-length="${length}" data-type="ascii" data-inverted="false" data-reversed="true" title="复制翻转结果">
+                                        <span class="copy-icon">📋</span>
+                                    </button>
+                                </div>
+                                <div class="conversion-result" id="ascii-reversed-${length}">等待输入...</div>
                             </div>
                         </div>
                         
@@ -859,7 +869,7 @@
                                     Unicode
                                     <span class="result-type unicode-type">U</span>
                                 </span>
-                                <button class="copy-btn" data-length="${length}" data-type="unicode" data-inverted="false" title="复制正常结果">
+                                <button class="copy-btn" data-length="${length}" data-type="unicode" data-inverted="false" data-reversed="false" title="复制正常结果">
                                     <span class="copy-icon">📋</span>
                                 </button>
                             </div>
@@ -867,11 +877,20 @@
                             <div class="inverted-result">
                                 <div class="inverted-header">
                                     <div class="inverted-label">0/1互换</div>
-                                    <button class="copy-btn" data-length="${length}" data-type="unicode" data-inverted="true" title="复制0/1互换结果">
+                                    <button class="copy-btn" data-length="${length}" data-type="unicode" data-inverted="true" data-reversed="false" title="复制0/1互换结果">
                                         <span class="copy-icon">📋</span>
                                     </button>
                                 </div>
                                 <div class="conversion-result" id="unicode-inverted-${length}">等待输入...</div>
+                            </div>
+                            <div class="inverted-result">
+                                <div class="inverted-header">
+                                    <div class="inverted-label">翻转</div>
+                                    <button class="copy-btn" data-length="${length}" data-type="unicode" data-inverted="false" data-reversed="true" title="复制翻转结果">
+                                        <span class="copy-icon">📋</span>
+                                    </button>
+                                </div>
+                                <div class="conversion-result" id="unicode-reversed-${length}">等待输入...</div>
                             </div>
                         </div>
                     </div>
@@ -901,6 +920,11 @@
         // 将二进制字符串中的0和1互换
         function invertBinaryString(binaryStr) {
             return binaryStr.split('').map(bit => bit === '0' ? '1' : '0').join('');
+        }
+        
+        // 将二进制字符串翻转
+        function reverseBinaryString(binaryStr) {
+            return binaryStr.split('').reverse().join('');
         }
         
         // 将二进制段转换为ASCII
@@ -1022,11 +1046,15 @@
                     document.getElementById(`ascii-normal-${length}`).className = 'conversion-result abnormal-data';
                     document.getElementById(`ascii-inverted-${length}`).textContent = '等待输入...';
                     document.getElementById(`ascii-inverted-${length}`).className = 'conversion-result abnormal-data';
+                    document.getElementById(`ascii-reversed-${length}`).textContent = '等待输入...';
+                    document.getElementById(`ascii-reversed-${length}`).className = 'conversion-result abnormal-data';
                     
                     document.getElementById(`unicode-normal-${length}`).textContent = '等待输入...';
                     document.getElementById(`unicode-normal-${length}`).className = 'conversion-result abnormal-data';
                     document.getElementById(`unicode-inverted-${length}`).textContent = '等待输入...';
                     document.getElementById(`unicode-inverted-${length}`).className = 'conversion-result abnormal-data';
+                    document.getElementById(`unicode-reversed-${length}`).textContent = '等待输入...';
+                    document.getElementById(`unicode-reversed-${length}`).className = 'conversion-result abnormal-data';
                 });
                 return;
             }
@@ -1035,16 +1063,19 @@
                 const normalSegments = splitBinaryString(binaryStr, length);
                 const invertedBinaryStr = invertBinaryString(binaryStr);
                 const invertedSegments = splitBinaryString(invertedBinaryStr, length);
+                const reversedBinaryStr = reverseBinaryString(binaryStr);
+                const reversedSegments = splitBinaryString(reversedBinaryStr, length);
                 
-                updateConversionType('ascii', length, normalSegments, invertedSegments);
-                updateConversionType('unicode', length, normalSegments, invertedSegments);
+                updateConversionType('ascii', length, normalSegments, invertedSegments, reversedSegments);
+                updateConversionType('unicode', length, normalSegments, invertedSegments, reversedSegments);
             });
         }
         
         // 更新特定类型的转换结果
-        function updateConversionType(type, length, normalSegments, invertedSegments) {
+        function updateConversionType(type, length, normalSegments, invertedSegments, reversedSegments) {
             const normalElement = document.getElementById(`${type}-normal-${length}`);
             const invertedElement = document.getElementById(`${type}-inverted-${length}`);
+            const reversedElement = document.getElementById(`${type}-reversed-${length}`);
             
             // 转换函数
             const converterFunc = type === 'ascii' ? binarySegmentToAscii : binarySegmentToUnicode;
@@ -1090,6 +1121,28 @@
                     invertedElement.className = 'conversion-result normal-data'; // 红色
                 } else {
                     invertedElement.className = 'conversion-result abnormal-data'; // 绿色
+                }
+            }
+            
+            // 翻转转换
+            if (reversedSegments.length === 0) {
+                reversedElement.textContent = `不足${length}位`;
+                reversedElement.className = 'conversion-result abnormal-data'; // 绿色
+            } else {
+                let result = '';
+                
+                for (let segment of reversedSegments) {
+                    const char = converterFunc(segment);
+                    result += char;
+                }
+                
+                reversedElement.textContent = result || '无结果';
+                
+                // 判断是否为可能正常数据
+                if (isPossibleNormalData(reversedElement.textContent, type)) {
+                    reversedElement.className = 'conversion-result normal-data'; // 红色
+                } else {
+                    reversedElement.className = 'conversion-result abnormal-data'; // 绿色
                 }
             }
         }
@@ -1176,14 +1229,23 @@
         // 初始化复制按钮事件
         function initCopyButtons() {
             document.addEventListener('click', function(e) {
-                // 处理所有复制按钮（包括正常结果和0/1互换结果）
+                // 处理所有复制按钮（包括正常结果、0/1互换结果和翻转结果）
                 if (e.target.classList.contains('copy-btn') || e.target.closest('.copy-btn')) {
                     const button = e.target.classList.contains('copy-btn') ? e.target : e.target.closest('.copy-btn');
                     const length = button.getAttribute('data-length');
                     const type = button.getAttribute('data-type');
                     const inverted = button.getAttribute('data-inverted') === 'true';
+                    const reversed = button.getAttribute('data-reversed') === 'true';
                     
-                    const elementId = inverted ? `${type}-inverted-${length}` : `${type}-normal-${length}`;
+                    let elementId;
+                    if (reversed) {
+                        elementId = `${type}-reversed-${length}`;
+                    } else if (inverted) {
+                        elementId = `${type}-inverted-${length}`;
+                    } else {
+                        elementId = `${type}-normal-${length}`;
+                    }
+                    
                     const element = document.getElementById(elementId);
                     const text = element.textContent;
                     
