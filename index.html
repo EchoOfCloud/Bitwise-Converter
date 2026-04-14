@@ -669,7 +669,7 @@
                     <div class="selection-actions">
                         <button class="selection-btn" id="selectAllBtn">全选</button>
                         <button class="selection-btn" id="selectNoneBtn">全不选</button>
-                        <button class="selection-btn" id="selectDefaultBtn">选择默认(5-10)</button>
+                        <button class="selection-btn" id="selectDefaultBtn">选择默认(6-11)</button>
                     </div>
                 </div>
                 
@@ -677,8 +677,8 @@
                     示例:
                     <span onclick="loadExample(1)">Hello (8位)</span>
                     <span onclick="loadExample(2)">Test (7位)</span>
-                    <span onclick="loadExample(3)">ABC (5位)</span>
-                    <span onclick="loadExample(4)">混合长度</span>
+                    <span onclick="loadExample(3)">Hello 10位翻转</span>
+                    <span onclick="loadExample(4)">Hello 8位0/1互换+翻转</span>
                 </div>
             </section>
             
@@ -737,7 +737,7 @@
     <script>
         // 配置
         const MAX_BYTE_LENGTH = 20;
-        const DEFAULT_BYTE_LENGTHS = [5, 6, 7, 8, 9, 10];
+        const DEFAULT_BYTE_LENGTHS = [6, 7, 8, 9, 10, 11];
         
         // 关于弹窗功能
         const aboutBtn = document.getElementById('aboutBtn');
@@ -1237,8 +1237,8 @@
             const examples = {
                 1: "0100100001100101011011000110110001101111", // Hello (8位)
                 2: "1010100110010111100111110100", // Test (7位)
-                3: "00001000110001010011", // ABC (5位)
-                4: "0100100001100101011011000110110001101111010011100101011101001111010100100100110001000100" // 混合长度
+                3: "11110110000011011000001101100010100110000001001000", // Hello 10位翻转
+                4: "0000100111001001110010010101100111101101" // Hello 8位0/1互换+翻转
             };
             
             binaryInput.value = examples[exampleNum];
