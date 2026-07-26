@@ -673,6 +673,17 @@
                     </div>
                 </div>
                 
+                <div class="byte-selection">
+                    <h3 class="byte-selection-title">关键字显示</h3>
+                    <div class="input-container">
+                        <label for="keywordsInput">关键字（用分号分隔）：</label>
+                        <textarea id="keywordsInput" placeholder="例如：flag;ctf;Zmxh;key;p@;pa;P@" rows="2">flag;ctf;Zmxh;key;p@;pa;P@</textarea>
+                        <div class="byte-length-note">
+                            提示：如果转换结果中包含以上关键字，将显示为红色
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="examples">
                     示例:
                     <span onclick="loadExample(1)">Hello (8位)</span>
@@ -773,6 +784,7 @@
         const selectDefaultBtn = document.getElementById('selectDefaultBtn');
         const resultCount = document.getElementById('resultCount');
         const emptyResult = document.getElementById('emptyResult');
+        const keywordsInput = document.getElementById('keywordsInput');
         
         // 状态
         let selectedByteLengths = [...DEFAULT_BYTE_LENGTHS];
@@ -1026,6 +1038,23 @@
             return false;
         }
         
+        // 获取关键字列表
+        function getKeywords() {
+            const keywordsText = keywordsInput.value.trim();
+            if (!keywordsText) return [];
+            return keywordsText.split(';').map(keyword => keyword.trim()).filter(keyword => keyword.length > 0);
+        }
+        
+        // 检查结果是否包含关键字
+        function containsKeyword(result) {
+            const keywords = getKeywords();
+            if (keywords.length === 0) return false;
+            
+            // 转换结果为小写进行不区分大小写的检查
+            const resultLower = result.toLowerCase();
+            return keywords.some(keyword => resultLower.includes(keyword.toLowerCase()));
+        }
+        
         // 检查结果是否为可能正常数据
         function isPossibleNormalData(result, type) {
             // 如果结果是"等待输入..."、"不足X位"或"无结果"，则不是正常数据
@@ -1126,8 +1155,8 @@
                 
                 normalElement.textContent = result || '无结果';
                 
-                // 判断是否为可能正常数据
-                if (isPossibleNormalData(normalElement.textContent, type)) {
+                // 判断是否为可能正常数据或包含关键字
+                if (isPossibleNormalData(normalElement.textContent, type) || containsKeyword(normalElement.textContent)) {
                     normalElement.className = 'conversion-result normal-data'; // 红色
                 } else {
                     normalElement.className = 'conversion-result abnormal-data'; // 绿色
@@ -1148,8 +1177,8 @@
                 
                 invertedElement.textContent = result || '无结果';
                 
-                // 判断是否为可能正常数据
-                if (isPossibleNormalData(invertedElement.textContent, type)) {
+                // 判断是否为可能正常数据或包含关键字
+                if (isPossibleNormalData(invertedElement.textContent, type) || containsKeyword(invertedElement.textContent)) {
                     invertedElement.className = 'conversion-result normal-data'; // 红色
                 } else {
                     invertedElement.className = 'conversion-result abnormal-data'; // 绿色
@@ -1170,8 +1199,8 @@
                 
                 reversedElement.textContent = result || '无结果';
                 
-                // 判断是否为可能正常数据
-                if (isPossibleNormalData(reversedElement.textContent, type)) {
+                // 判断是否为可能正常数据或包含关键字
+                if (isPossibleNormalData(reversedElement.textContent, type) || containsKeyword(reversedElement.textContent)) {
                     reversedElement.className = 'conversion-result normal-data'; // 红色
                 } else {
                     reversedElement.className = 'conversion-result abnormal-data'; // 绿色
@@ -1192,8 +1221,8 @@
                 
                 invertReversedElement.textContent = result || '无结果';
                 
-                // 判断是否为可能正常数据
-                if (isPossibleNormalData(invertReversedElement.textContent, type)) {
+                // 判断是否为可能正常数据或包含关键字
+                if (isPossibleNormalData(invertReversedElement.textContent, type) || containsKeyword(invertReversedElement.textContent)) {
                     invertReversedElement.className = 'conversion-result normal-data'; // 红色
                 } else {
                     invertReversedElement.className = 'conversion-result abnormal-data'; // 绿色
@@ -1331,6 +1360,7 @@
             initByteSelectionEvents();
             
             binaryInput.addEventListener('input', updateConversionResults);
+            keywordsInput.addEventListener('input', updateConversionResults);
             clearBtn.addEventListener('click', clearInput);
             
             updateConversionResults();
